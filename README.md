@@ -18,6 +18,7 @@ STL Loose Exporter is a Blender add-on that applys all modifiers, separates loos
 5. Click `Install` at the top.
 6. Navigate to and select the `stl_loose_exporter.py` file.
 7. Enable the add-on by checking the box next to it.
+8. Configure path and scale factor to be used
 
 ## Usage
 
@@ -25,9 +26,8 @@ STL Loose Exporter is a Blender add-on that applys all modifiers, separates loos
 2. Select the mesh object you want to process.
 3. Open the sidebar by pressing `N` if it's not already open.
 4. Find the `STL Loose Exporter` panel in the `Tool` tab.
-5. Set the desired export path and scale factor.
-6. Click the `Export Separated Parts` button.
-7. The script will execute, and the exported files will be logged to the console.
+5. Click the `Export Separated Parts` button.
+6. The script will execute, and the exported files will be logged to the console.
 
 ## License
 
