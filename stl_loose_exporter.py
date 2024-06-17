@@ -4,7 +4,7 @@ bl_info = {
     "category": "Object",
     "version": (1, 0),
     "description": "Separates loose parts of an object and exports them as individual STL files",
-    "author": "Your Name",
+    "author": "Thomas Hartwig",
     "location": "View3D > Tool Shelf > STL Loose Exporter",
     "warning": "",
     "wiki_url": "",
@@ -14,6 +14,28 @@ bl_info = {
 
 import bpy
 import os
+
+class STLLooseExporterPreferences(bpy.types.AddonPreferences):
+    bl_idname = __name__
+
+    export_path: bpy.props.StringProperty(
+        name="Export Path",
+        description="Path to export separated parts",
+        default="/tmp",
+        subtype='DIR_PATH'
+    )
+
+    scale_factor: bpy.props.FloatProperty(
+        name="Scale Factor",
+        description="Scaling factor for the exported STL files",
+        default=1000.0,
+    )
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "export_path")
+        layout.prop(self, "scale_factor")
+
 
 class WM_OT_report_error(bpy.types.Operator):
     bl_idname = "wm.report_error"
@@ -28,19 +50,6 @@ class OBJECT_OT_export_separated_parts(bpy.types.Operator):
     bl_idname = "object.export_separated_parts"
     bl_label = "Export Separated Parts"
     bl_options = {'REGISTER', 'UNDO'}
-
-    export_path: bpy.props.StringProperty(
-        name="Export Path",
-        description="Path to export separated parts",
-        default="/tmp",
-        subtype='DIR_PATH'
-    )
-
-    scale_factor: bpy.props.FloatProperty(
-        name="Scale Factor",
-        description="Scaling factor for the exported STL files",
-        default=1000.0,
-    )
 
     def ensure_directory_exists(self, path):
         try:
@@ -94,7 +103,11 @@ class OBJECT_OT_export_separated_parts(bpy.types.Operator):
         bpy.ops.object.delete()
 
     def execute(self, context):
-        if not self.ensure_directory_exists(self.export_path):
+        prefs = context.preferences.addons[__name__].preferences
+        export_path = prefs.export_path
+        scale_factor = prefs.scale_factor
+
+        if not self.ensure_directory_exists(export_path):
             self.report({'ERROR'}, "Script execution stopped due to directory issues.")
             return {'CANCELLED'}
 
@@ -109,7 +122,7 @@ class OBJECT_OT_export_separated_parts(bpy.types.Operator):
             separated_objects = bpy.context.selected_objects
             self.rename_parts(separated_objects, original_name)
             
-            exported_files = self.export_to_stl(separated_objects, self.export_path, self.scale_factor)
+            exported_files = self.export_to_stl(separated_objects, export_path, scale_factor)
             
             self.delete_objects(separated_objects)
             
@@ -137,37 +150,23 @@ class OBJECT_PT_export_separated_parts_panel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         layout.operator(OBJECT_OT_export_separated_parts.bl_idname)
-        layout.prop(context.scene, "export_separated_parts_path")
-        layout.prop(context.scene, "export_separated_parts_scale")
 
 def menu_func(self, context):
     self.layout.operator(OBJECT_OT_export_separated_parts.bl_idname)
 
 def register():
+    bpy.utils.register_class(STLLooseExporterPreferences)
     bpy.utils.register_class(WM_OT_report_error)
     bpy.utils.register_class(OBJECT_OT_export_separated_parts)
     bpy.utils.register_class(OBJECT_PT_export_separated_parts_panel)
     bpy.types.VIEW3D_MT_object.append(menu_func)
-    bpy.types.Scene.export_separated_parts_path = bpy.props.StringProperty(
-        name="Export Path",
-        description="Path to export separated parts",
-        default="/tmp",
-        subtype='DIR_PATH'
-    )
-    bpy.types.Scene.export_separated_parts_scale = bpy.props.FloatProperty(
-        name="Scale Factor",
-        description="Scaling factor for the exported STL files",
-        default=1000.0,
-    )
 
 def unregister():
+    bpy.utils.unregister_class(STLLooseExporterPreferences)
     bpy.utils.unregister_class(WM_OT_report_error)
     bpy.utils.unregister_class(OBJECT_OT_export_separated_parts)
     bpy.utils.unregister_class(OBJECT_PT_export_separated_parts_panel)
     bpy.types.VIEW3D_MT_object.remove(menu_func)
-    del bpy.types.Scene.export_separated_parts_path
-    del bpy.types.Scene.export_separated_parts_scale
 
 if __name__ == "__main__":
     register()
-
