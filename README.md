@@ -19,7 +19,7 @@ It also might be used as a simple one click STL exporter.
 5. Click `Install` at the top.
 6. Navigate to and select the `stl_loose_exporter.py` file.
 7. Enable the add-on by checking the box next to it.
-8. Configure path and scale factor to be used
+8. Configure path and scale factor to be used.
 
 ## Usage
 
