@@ -1,6 +1,7 @@
 # STL Loose Exporter
 
-STL Loose Exporter is a Blender add-on that applys all modifiers, separates loose parts and exports them as individual STL files.
+STL Loose Exporter is a Blender add-on that applys all modifiers, separates loose parts and exports them as individual STL files to be used for a 3D Printer.
+It also might be used as a simple one click STL exporter.
 
 ## Features
 
